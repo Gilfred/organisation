@@ -21,9 +21,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
-  sessions      Session[]
-  accounts      Account[]
-  userRoles     UserRole[]
+  sessions           Session[]
+  accounts           Account[]
+  userRoles          UserRole[]
+  userCommunityRoles UserCommunityRole[]
 
   @@map("user")
 }
@@ -80,8 +81,9 @@ model Role {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   
-  userRoles       UserRole[]
-  rolePermissions RolePermission[]
+  userRoles          UserRole[]
+  rolePermissions    RolePermission[]
+  userCommunityRoles UserCommunityRole[]
 
   @@map("role")
 }
@@ -128,4 +130,38 @@ model RolePermission {
   @@index([roleId])
   @@index([permissionId])
   @@map("role_permission")
+}
+
+/// --- Community Models ---
+
+model Community {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userCommunityRoles UserCommunityRole[]
+
+  @@map("community")
+}
+
+model UserCommunityRole {
+  id          String   @id @default(uuid())
+  userId      String
+  communityId String
+  roleId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId, roleId])
+  @@index([userId])
+  @@index([communityId])
+  @@index([roleId])
+  @@map("user_community_role")
 }

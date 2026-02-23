@@ -13,26 +13,58 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    // Fetch user roles and their associated permissions
-    const userRoles = await prisma.userRole.findMany({
-        where: { userId: session.user.id },
-        include: {
-            role: {
-                include: {
-                    rolePermissions: {
-                        include: {
-                            permission: true
+    const query = getQuery(event);
+    const communityId = query.communityId as string;
+
+    let roles: string[] = [];
+    let permissions: string[] = [];
+
+    if (communityId) {
+        // Fetch roles and permissions for a specific community
+        const communityRoles = await prisma.userCommunityRole.findMany({
+            where: {
+                userId: session.user.id,
+                communityId: communityId
+            },
+            include: {
+                role: {
+                    include: {
+                        rolePermissions: {
+                            include: {
+                                permission: true
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
-    const roles = userRoles.map(ur => ur.role.name);
-    const permissions = Array.from(new Set(
-        userRoles.flatMap(ur => ur.role.rolePermissions.map(rp => rp.permission.name))
-    ));
+        roles = communityRoles.map(cr => cr.role.name);
+        permissions = Array.from(new Set(
+            communityRoles.flatMap(cr => cr.role.rolePermissions.map(rp => rp.permission.name))
+        ));
+    } else {
+        // Fetch global roles
+        const userRoles = await prisma.userRole.findMany({
+            where: { userId: session.user.id },
+            include: {
+                role: {
+                    include: {
+                        rolePermissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        roles = userRoles.map(ur => ur.role.name);
+        permissions = Array.from(new Set(
+            userRoles.flatMap(ur => ur.role.rolePermissions.map(rp => rp.permission.name))
+        ));
+    }
 
     return {
         roles,
