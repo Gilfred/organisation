@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding database...')
+  console.log('🚀 Starting seed process...')
+  console.log('🌱 Creating roles...')
 
   // Create Roles
   const userRole = await prisma.role.upsert({
@@ -56,7 +57,7 @@ async function main() {
     }
   }
 
-  console.log('✅ Seeding complete.')
+  console.log('✅ Seeding complete successfully.')
 }
 
 main()
