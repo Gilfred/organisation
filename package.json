@@ -12,11 +12,19 @@
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.5.0-beta.9",
     "@prisma/client": "^6.19.2",
+    "better-auth": "^1.4.18",
     "nuxt": "^4.3.1",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "prisma": "^6.19.2"
+    "@types/node": "^25.3.0",
+    "prisma": "^6.19.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma",
+    "seed": "ts-node prisma/seed.ts"
   }
 }
