@@ -18,15 +18,16 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (!requiredRole && !requiredPermission) return;
 
   // Fetch user roles and permissions from our API
-  const { data: authData } = await useFetch('/api/user/roles', {
+  // Using $fetch instead of useFetch in middleware
+  const authData = await $fetch('/api/user/roles', {
     headers: useRequestHeaders(['cookie'])
-  });
+  }) as any;
 
-  if (!authData.value) {
+  if (!authData) {
     return navigateTo('/');
   }
 
-  const { roles, permissions } = authData.value;
+  const { roles, permissions } = authData;
 
   if (requiredRole && !roles.includes(requiredRole)) {
     return navigateTo('/');
