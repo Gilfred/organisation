@@ -6,6 +6,10 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
+
+    emailPassword: {
+        enabled: true,
+    },
     socialProviders: {
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -17,17 +21,17 @@ export const auth = betterAuth({
         user: {
             create: {
                 after: async (user) => {
-                    // Assign default role "user" upon creation
+                    // Assign default global role "user" upon creation
                     try {
                         let role = await prisma.role.findUnique({
                             where: { name: "user" }
                         });
-                        
+
                         if (!role) {
                             role = await prisma.role.create({
-                                data: { 
-                                    name: "user", 
-                                    description: "Default user role" 
+                                data: {
+                                    name: "user",
+                                    description: "Default user role"
                                 }
                             });
                         }
