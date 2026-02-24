@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
   console.log('🚀 Starting seed process...')
 
   // 1. Create Roles
@@ -117,7 +116,7 @@ async function main() {
 
   // 6. Assign Memberships (UserCommunityRole)
   console.log('🎖️ Assigning users to communities...')
-
+  
   // Alice is Admin in Nuxt Developers
   await prisma.userCommunityRole.upsert({
     where: {
