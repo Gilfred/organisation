@@ -12,6 +12,5 @@ export default defineNuxtConfig({
       // Public keys are available on both client and server
       betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:3000'
     }
-  },
-  modules: ['@nuxtjs/tailwindcss']
+  }
 })
