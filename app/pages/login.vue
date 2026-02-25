@@ -41,17 +41,17 @@ const logout = async () => {
   message.value = "Vous avez été déconnecté."
 }
 
-const { data: session, isPending } = authClient.useSession()
+const session = authClient.useSession()
 </script>
 
 <template>
   <div style="padding: 20px; font-family: sans-serif; max-width: 400px; margin: 0 auto;">
     <h1>{{ isRegister ? 'Créer un compte' : 'Connexion' }}</h1>
 
-    <div v-if="isPending">Vérification de la session...</div>
+    <div v-if="session.isPending">Vérification de la session...</div>
 
-    <div v-else-if="session">
-      <p>Connecté en tant que: <strong>{{ session.user.email }}</strong></p>
+    <div v-else-if="session.data">
+      <p>Connecté en tant que: <strong>{{ session.data.user.email }}</strong></p>
       <div style="display: flex; gap: 10px;">
         <button @click="navigateTo('/organizations')">Mes Organisations</button>
         <button @click="logout" style="background: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer;">Déconnexion</button>
