@@ -1,46 +1,44 @@
 # Guide de test pour la gestion des Organisations
 
-Ce document explique comment tester l'implémentation de la gestion des organisations avec Better Auth.
+Ce document explique comment tester l'implémentation de la gestion des organisations avec Better Auth dans votre application Nuxt.
 
-## Prérequis
+## Configuration requise
 
-1.  **Variables d'environnement** : Assurez-vous d'avoir un fichier `.env` avec les variables suivantes :
+1.  **Fichier `.env`** : Créez un fichier `.env` à la racine du projet avec :
     ```env
-    DATABASE_URL="postgresql://..."
-    BETTER_AUTH_SECRET="une_valeur_secrete_longue"
+    DATABASE_URL="postgresql://utilisateur:motdepasse@localhost:5432/votre_base"
+    BETTER_AUTH_SECRET="une_valeur_secrete_de_32_caracteres_minimum"
     BETTER_AUTH_URL="http://localhost:3000"
     ```
-2.  **Base de données** : Appliquez les changements de schéma :
+2.  **Base de données** : Appliquez les migrations Prisma :
     ```bash
-    npx prisma migrate dev --name add_organizations
+    npx prisma migrate dev --name init_orgs
     ```
 
-## Pages de Test
+## Utilisation de l'interface de test
 
-L'application inclut désormais des pages pour tester directement dans le navigateur :
+Le projet contient des pages simples pour tester les fonctionnalités :
 
--   **Accueil (`/`)** : Instructions et navigation.
--   **Connexion (`/login`)** : Permet de créer un compte (Inscription) ou de se connecter.
--   **Organisations (`/organizations`)** : Interface complète pour créer une organisation, changer l'organisation active et inviter des membres.
+-   **Accueil (`/`)** : Lien vers les différentes pages de test.
+-   **Connexion (`/login`)** : Créez un compte via l'onglet "Pas de compte ?" puis connectez-vous.
+-   **Organisations (`/organizations`)** :
+    -   Créez une nouvelle organisation (ex: Nom: "Ma Team", Slug: "ma-team").
+    -   Basculez entre vos organisations.
+    -   Invitez d'autres membres par email.
 
-## Structure Technique
+## Résolution des problèmes fréquents
 
--   **Handler API (`server/api/auth/[...auth].ts`)** : Point d'entrée crucial qui gère toutes les requêtes d'authentification.
--   **Configuration Serveur (`server/auth.ts`)** : Configuration de Better Auth avec le plugin `organization`.
--   **Configuration Client (`app/lib/auth-client.ts`)** : Client Better Auth pour le frontend.
--   **Permissions (`auth/permission.ts`)** : Définition des rôles et ressources.
+### Erreur 500 au chargement
+- **Vérifiez la console serveur** : J'ai ajouté des logs qui commencent par `[Better Auth]` et `[Prisma]`.
+- **Base de données** : Si Prisma ne peut pas se connecter, une erreur sera affichée au démarrage du serveur.
+- **Migration** : Assurez-vous d'avoir exécuté `npx prisma migrate dev`. Si vous avez changé le schéma manuellement, essayez `npx prisma db push`.
+- **Secret** : Assurez-vous que `BETTER_AUTH_SECRET` est bien présent.
 
-## Guide de Test pas à pas
+### 404 sur les requêtes `/api/auth/*`
+- Assurez-vous que le fichier `server/api/auth/[...auth].ts` existe bien.
+- Vérifiez que vous utilisez le bon port (généralement 3000).
 
-1.  Allez sur `/login` et cliquez sur "Pas de compte ?" pour vous inscrire.
-2.  Une fois connecté, vous serez redirigé vers `/organizations`.
-3.  Créez une organisation en remplissant le nom et le slug.
-4.  Une fois créée, elle apparaîtra dans "Mes Organisations". Cliquez sur "Activer" si elle ne l'est pas déjà.
-5.  Invitez un collègue par son email (il devra aussi se créer un compte pour voir ses invitations, bien que l'invitation apparaisse déjà en base de données).
-
-## Résolution des problèmes (500 Error)
-
-Si vous rencontrez une erreur 500 :
-1.  Vérifiez que `DATABASE_URL` est correct et que les migrations Prisma ont été appliquées.
-2.  Vérifiez que `BETTER_AUTH_SECRET` est défini dans votre `.env`.
-3.  Assurez-vous que le serveur a été redémarré après l'ajout de `server/api/auth/[...auth].ts`.
+## Architecture
+- `server/auth.ts` : Configuration principale.
+- `auth/permission.ts` : Définition des rôles (`owner`, `admin`, `member`) et des permissions.
+- `app/lib/auth-client.ts` : Configuration du client Nuxt.

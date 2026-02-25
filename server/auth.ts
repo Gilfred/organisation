@@ -4,12 +4,14 @@ import { prismaAdapter } from "@better-auth/prisma-adapter"
 import { prisma } from "~~/server/utils/prisma"
 import { ac, admin, member, owner } from "~~/auth/permission"
 
+console.log("[Better Auth] Initialisation du serveur d'authentification...");
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET || "fallback_secret_for_development_only_32_chars_long",
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   emailAndPassword: {
     enabled: true,
   },
@@ -30,10 +32,11 @@ export const auth = betterAuth({
         member,
       },
       sendInvitationEmail: async (data) => {
-        const inviteLink = `${process.env.BETTER_AUTH_URL}/accept-invitation/${data.id}`;
-        console.log(`Invitation envoyée à ${data.email}. Lien: ${inviteLink}`);
-        // Ici, vous intégreriez un service d'envoi d'email comme Resend, SendGrid, etc.
+        const inviteLink = `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/accept-invitation/${data.id}`;
+        console.log(`[Better Auth] Invitation à envoyer à ${data.email}. Lien: ${inviteLink}`);
       },
     })
   ]
-})
+});
+
+console.log("[Better Auth] Serveur d'authentification initialisé.");
