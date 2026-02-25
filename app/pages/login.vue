@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { authClient } from '~~/app/lib/auth-client'
+import { authClient } from '~/lib/auth-client'
 import { ref } from 'vue'
 
 const email = ref('')

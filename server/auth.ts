@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth"
 import { organization } from "better-auth/plugins"
 import { prismaAdapter } from "@better-auth/prisma-adapter"
 import { prisma } from "~~/server/utils/prisma"
-import { ac, admin, member, owner } from "~~/auth/permission"
+import { ac, admin, member, owner } from "~~/app/auth/permission"
 
 console.log("[Better Auth] Initialisation du serveur d'authentification...");
 
