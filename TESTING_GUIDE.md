@@ -4,61 +4,43 @@ Ce document explique comment tester l'implémentation de la gestion des organisa
 
 ## Prérequis
 
-1.  **Base de données** : Assurez-vous que votre `DATABASE_URL` est configuré dans le fichier `.env`.
-2.  **Migration** : Appliquez les changements de schéma :
+1.  **Variables d'environnement** : Assurez-vous d'avoir un fichier `.env` avec les variables suivantes :
+    ```env
+    DATABASE_URL="postgresql://..."
+    BETTER_AUTH_SECRET="une_valeur_secrete_longue"
+    BETTER_AUTH_URL="http://localhost:3000"
+    ```
+2.  **Base de données** : Appliquez les changements de schéma :
     ```bash
     npx prisma migrate dev --name add_organizations
     ```
 
-## Tests recommandés
+## Pages de Test
 
-### 1. Création d'une Organisation
-Depuis votre client Nuxt, vous pouvez créer une organisation :
-```typescript
-import { authClient } from "~/lib/auth-client"
+L'application inclut désormais des pages pour tester directement dans le navigateur :
 
-const { data, error } = await authClient.organization.create({
-    name: "Ma Super Entreprise",
-    slug: "ma-super-entreprise",
-});
+-   **Accueil (`/`)** : Instructions et navigation.
+-   **Connexion (`/login`)** : Permet de créer un compte (Inscription) ou de se connecter.
+-   **Organisations (`/organizations`)** : Interface complète pour créer une organisation, changer l'organisation active et inviter des membres.
 
-if (data) {
-    console.log("Organisation créée !", data);
-}
-```
-*Note : Le créateur devient automatiquement 'owner' de l'organisation.*
+## Structure Technique
 
-### 2. Vérification des Permissions
-Pour vérifier si l'utilisateur actuel a la permission de créer un projet (définie dans `auth/permission.ts`) :
-```typescript
-const canCreateProject = await authClient.organization.hasPermission({
-  permissions: {
-    project: ["create"],
-  },
-});
+-   **Handler API (`server/api/auth/[...auth].ts`)** : Point d'entrée crucial qui gère toutes les requêtes d'authentification.
+-   **Configuration Serveur (`server/auth.ts`)** : Configuration de Better Auth avec le plugin `organization`.
+-   **Configuration Client (`app/lib/auth-client.ts`)** : Client Better Auth pour le frontend.
+-   **Permissions (`auth/permission.ts`)** : Définition des rôles et ressources.
 
-console.log("Peut créer un projet ?", canCreateProject);
-```
+## Guide de Test pas à pas
 
-### 3. Changement d'Organisation active
-Si l'utilisateur appartient à plusieurs organisations :
-```typescript
-await authClient.organization.setActive({
-    organizationId: "id-de-l-organisation"
-});
-```
+1.  Allez sur `/login` et cliquez sur "Pas de compte ?" pour vous inscrire.
+2.  Une fois connecté, vous serez redirigé vers `/organizations`.
+3.  Créez une organisation en remplissant le nom et le slug.
+4.  Une fois créée, elle apparaîtra dans "Mes Organisations". Cliquez sur "Activer" si elle ne l'est pas déjà.
+5.  Invitez un collègue par son email (il devra aussi se créer un compte pour voir ses invitations, bien que l'invitation apparaisse déjà en base de données).
 
-### 4. Invitation d'un membre
-```typescript
-await authClient.organization.inviteMember({
-    email: "collegue@exemple.com",
-    role: "admin", // ou 'member'
-});
-```
+## Résolution des problèmes (500 Error)
 
-## Structure de l'implémentation
-
--   **Serveur** (`server/auth.ts`) : Configuration de Better Auth avec le plugin `organization`, l'adaptateur Prisma et le contrôle d'accès (AC).
--   **Client** (`app/lib/auth-client.ts`) : Initialisation du client avec le plugin `organizationClient`.
--   **Permissions** (`auth/permission.ts`) : Définition des ressources (`project`, `sale`) et des rôles (`owner`, `admin`, `member`).
--   **Schéma** (`prisma/schema.prisma`) : Tables `Organization`, `Member` et `Invitation` ajoutées.
+Si vous rencontrez une erreur 500 :
+1.  Vérifiez que `DATABASE_URL` est correct et que les migrations Prisma ont été appliquées.
+2.  Vérifiez que `BETTER_AUTH_SECRET` est défini dans votre `.env`.
+3.  Assurez-vous que le serveur a été redémarré après l'ajout de `server/api/auth/[...auth].ts`.

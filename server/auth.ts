@@ -8,14 +8,18 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
   emailAndPassword: {
     enabled: true,
   },
   socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    },
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      }
+    } : {}),
   },
   plugins: [
     organization({
@@ -24,7 +28,12 @@ export const auth = betterAuth({
         owner,
         admin,
         member,
-      }
+      },
+      sendInvitationEmail: async (data) => {
+        const inviteLink = `${process.env.BETTER_AUTH_URL}/accept-invitation/${data.id}`;
+        console.log(`Invitation envoyée à ${data.email}. Lien: ${inviteLink}`);
+        // Ici, vous intégreriez un service d'envoi d'email comme Resend, SendGrid, etc.
+      },
     })
   ]
 })
