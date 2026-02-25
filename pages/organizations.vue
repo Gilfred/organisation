@@ -50,14 +50,22 @@ const inviteMember = async () => {
 <template>
   <div style="padding: 20px; font-family: sans-serif;">
     <h1>Gestion des Organisations</h1>
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> be388da89f4935a552d0af84c92f0b1ceacc6a51
     <div v-if="!session" style="color: red;">
       Vous devez être connecté pour tester cette page. <NuxtLink to="/login">Aller à la page de connexion</NuxtLink>
     </div>
 
     <div v-else>
       <p>Connecté en tant que: <strong>{{ session.user.email }}</strong></p>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> be388da89f4935a552d0af84c92f0b1ceacc6a51
       <hr />
 
       <section>
@@ -97,7 +105,6 @@ const inviteMember = async () => {
       <div v-if="message" style="margin-top: 20px; padding: 10px; background: #eee; border: 1px solid #ccc;">
         {{ message }}
       </div>
-      
       <p style="margin-top: 40px;">
         <NuxtLink to="/">Retour à l'accueil</NuxtLink>
       </p>

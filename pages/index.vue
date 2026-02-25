@@ -2,7 +2,6 @@
   <div style="padding: 20px; font-family: sans-serif;">
     <h1>Nuxt + Better Auth Organizations</h1>
     <p>Cette application permet de tester l'implémentation des organisations.</p>
-    
     <nav>
       <ul>
         <li><NuxtLink to="/login">Connexion / Inscription</NuxtLink></li>

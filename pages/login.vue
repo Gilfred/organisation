@@ -57,7 +57,6 @@ const { data: session } = authClient.useSession()
       <input v-model="email" type="email" required /><br />
       <label>Mot de passe:</label><br />
       <input v-model="password" type="password" required /><br /><br />
-      
       <button type="submit">{{ isRegister ? 'S\'inscrire' : 'Se connecter' }}</button>
       <button type="button" @click="isRegister = !isRegister" style="margin-left: 10px;">
         {{ isRegister ? 'Déjà un compte ?' : 'Pas de compte ?' }}
