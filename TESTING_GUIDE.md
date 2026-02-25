@@ -1,46 +1,27 @@
 # Guide de test pour la gestion des Organisations
 
-Ce document explique comment tester l'implémentation de la gestion des organisations avec Better Auth dans votre application Nuxt.
+Ce document explique comment tester l'implémentation complète de la gestion des organisations avec Better Auth.
 
-## Configuration requise
+## Étape 1 : Configuration
+1.  **Fichier `.env`** : Assurez-vous d'avoir configuré `DATABASE_URL`, `BETTER_AUTH_SECRET` et `BETTER_AUTH_URL`.
+2.  **Base de données** : Appliquez les schémas avec `npx prisma migrate dev`.
 
-1.  **Fichier `.env`** : Créez un fichier `.env` à la racine du projet avec :
-    ```env
-    DATABASE_URL="postgresql://utilisateur:motdepasse@localhost:5432/votre_base"
-    BETTER_AUTH_SECRET="une_valeur_secrete_de_32_caracteres_minimum"
-    BETTER_AUTH_URL="http://localhost:3000"
-    ```
-2.  **Base de données** : Appliquez les migrations Prisma :
-    ```bash
-    npx prisma migrate dev --name init_orgs
-    ```
+## Étape 2 : Test de Création
+1.  Ouvrez l'application sur `/login`.
+2.  Créez un compte (ex: `admin@test.com`) et connectez-vous.
+3.  Allez sur `/organizations`.
+4.  Remplissez le formulaire "Créer une Organisation" et validez.
+5.  L'organisation doit apparaître dans "Mes Organisations". Cliquez sur "Activer".
 
-## Utilisation de l'interface de test
+## Étape 3 : Test d'Invitation et "Rejoindre"
+1.  Dans l'organisation active, utilisez le formulaire d'invitation pour inviter un autre email (ex: `user@test.com`).
+2.  **Vérifiez la console du serveur** : Le lien d'invitation sera affiché (ex: `http://localhost:3000/accept-invitation/ID_INVIT`).
+3.  Déconnectez-vous et créez un compte avec l'email invité (`user@test.com`).
+4.  Sur la page `/organizations` de ce nouvel utilisateur, vous verrez l'invitation dans la section **"Invitations Reçues"**.
+5.  Cliquez sur **"Accepter"**. L'organisation apparaîtra alors dans sa liste "Mes Organisations".
+6.  Alternativement, vous pouvez coller le lien d'invitation affiché dans la console serveur directement dans votre navigateur.
 
-Le projet contient des pages simples pour tester les fonctionnalités :
-
--   **Accueil (`/`)** : Lien vers les différentes pages de test.
--   **Connexion (`/login`)** : Créez un compte via l'onglet "Pas de compte ?" puis connectez-vous.
--   **Organisations (`/organizations`)** :
-    -   Créez une nouvelle organisation (ex: Nom: "Ma Team", Slug: "ma-team").
-    -   Basculez entre vos organisations.
-    -   Invitez d'autres membres par email.
-
-## Résolution des problèmes fréquents
-
-### Erreur 500 ou Page Blanche
-- **Structure Nuxt 4** : Les pages ont été déplacées dans `app/pages/` conformément à la nouvelle structure de Nuxt 4.
-- **Console serveur** : J'ai ajouté des logs qui commencent par `[Better Auth]` et `[Prisma]`.
-- **Base de données** : Si Prisma ne peut pas se connecter, une erreur sera affichée au démarrage du serveur.
-- **Migration** : Assurez-vous d'avoir exécuté `npx prisma migrate dev`.
-- **Secret** : Assurez-vous que `BETTER_AUTH_SECRET` est bien présent.
-
-### 404 sur les requêtes `/api/auth/*`
-- Le handler est situé dans `server/api/auth/[...auth].ts`.
-- Assurez-vous d'utiliser le port configuré dans `BETTER_AUTH_URL`.
-
-## Architecture (Nuxt 4)
-- `server/auth.ts` : Configuration principale (Backend).
-- `app/auth/permission.ts` : Définition des rôles (`owner`, `admin`, `member`) et des permissions.
-- `app/lib/auth-client.ts` : Configuration du client Nuxt (Vue).
-- `app/pages/` : Contient toutes les interfaces de test.
+## Résolution des problèmes
+- **L'organisation ne s'affiche pas** : Assurez-vous d'avoir cliqué sur "Activer" pour la rendre active dans votre session.
+- **Invitations non visibles** : L'email utilisé pour l'invitation doit correspondre exactement à l'email du compte utilisateur.
+- **Erreur 500** : Vérifiez les logs du serveur pour des erreurs de connexion à la base de données.
