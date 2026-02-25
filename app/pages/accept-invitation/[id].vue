@@ -8,6 +8,12 @@ const message = ref('Acceptation de l\'invitation en cours...')
 const error = ref('')
 
 onMounted(async () => {
+  if (!invitationId) {
+    error.value = "ID d'invitation manquant"
+    message.value = ""
+    return
+  }
+
   const { data, error: err } = await authClient.organization.acceptInvitation({
     invitationId
   })
