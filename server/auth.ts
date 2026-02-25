@@ -32,12 +32,26 @@ export const auth = betterAuth({
         member,
 
       },
+      organizationHooks: {
+        afterCreateOrganization: async ({ organization, user }) => {
+          console.log(`[Better Auth] Organisation créée: ${organization.name} (${organization.slug}) par ${user.email}`);
+        },
+        afterAddMember: async ({ member, user, organization }) => {
+          console.log(`[Better Auth] Membre ajouté: ${user.email} rejoint ${organization.name} avec le rôle ${member.role}`);
+        },
+        afterAcceptInvitation: async ({ invitation, member, user, organization }) => {
+          console.log(`[Better Auth] Invitation acceptée: ${user.email} a rejoint ${organization.name}`);
+        }
+      },
       sendInvitationEmail: async (data) => {
         const inviteLink = `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/accept-invitation/${data.id}`;
-        console.log(`[Better Auth] Invitation à envoyer à ${data.email}. Lien: ${inviteLink}`);
+        console.log(`[Better Auth] INVITATION à envoyer à ${data.email}.`);
+        console.log(`[Better Auth] Lien d'acceptation: ${inviteLink}`);
+        console.log(`[Better Auth] Rôle proposé: ${data.role}`);
+        console.log(`[Better Auth] Organisation: ${data.organization.name}`);
       },
     })
   ]
 });
 
-console.log("[Better Auth] Serveur d'authentification initialisé.");
+console.log("[Better Auth] Serveur d'authentification prêt.");
