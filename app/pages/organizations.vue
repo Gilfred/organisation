@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { authClient } from '~~/app/lib/auth-client'
+import { authClient } from '~/lib/auth-client'
 import { ref, onMounted } from 'vue'
 
 const { data: session } = authClient.useSession()
